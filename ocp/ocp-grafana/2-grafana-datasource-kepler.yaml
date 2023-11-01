@@ -1,0 +1,24 @@
+kind: GrafanaDatasource
+apiVersion: grafana.integreatly.org/v1beta1
+metadata:
+  name: grafanadatasource-kepler
+  namespace: kepler-demo
+  labels: 
+    app: grafana-kepler
+spec:
+  datasource:
+    access: proxy
+    editable: true
+    isDefault: true
+    jsonData:
+      timeInterval: 5s
+      tlsSkipVerify: true
+    name: prometheus
+    type: prometheus
+    url: 'http://prometheus-kepler-prometheus.kepler-demo.svc.cluster.local:9090'
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana-kepler
+  plugins:
+    - name: grafana-clock-panel
+      version: 1.3.0

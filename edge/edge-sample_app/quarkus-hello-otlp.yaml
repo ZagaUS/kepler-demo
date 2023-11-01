@@ -1,0 +1,77 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: quarkus-hello-otlp
+  namespace: ocp-demo
+  labels:
+    app: quarkus-hello-otlp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: quarkus-hello-otlp
+  template:
+    metadata:
+      labels:
+        app: quarkus-hello-otlp
+        deployment: quarkus-hello-otlp
+    spec:
+      imagePullSecrets:
+      - name: mukesh-docker-creds
+      
+      containers:
+        - name: quarkus-hello-otlp
+
+          image: >-
+            docker.io/mugicoder13/otel-quarkus-demo:latest
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+            - containerPort: 8443
+              protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: Always
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      schedulerName: default-scheduler
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
+
+
+--- 
+
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: quarkus-hello-otlp
+  namespace: ocp-demo
+  labels:
+    app: quarkus-hello-otlp
+    app.kubernetes.io/component: quarkus-hello-otlp
+    app.kubernetes.io/instance: quarkus-hello-otlp
+    app.kubernetes.io/name: quarkus-hello-otlp
+spec:
+  ipFamilies:
+    - IPv4
+  ports:
+    - name: 8080-tcp
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+  internalTrafficPolicy: Cluster
+  type: ClusterIP
+  ipFamilyPolicy: SingleStack
+  sessionAffinity: None
+  selector:
+    app: quarkus-hello-otlp
+    deployment: quarkus-hello-otlp

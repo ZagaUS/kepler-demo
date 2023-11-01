@@ -1,0 +1,12 @@
+kind: GrafanaDashboard
+apiVersion: grafana.integreatly.org/v1beta1
+metadata:
+  name: grafanadashboard-kepler
+  namespace: kepler-demo
+  labels:
+    app: grafana-kepler
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana-kepler
+  url: https://raw.githubusercontent.com/sustainable-computing-io/kepler/main/grafana-dashboards/Kepler-Exporter.json

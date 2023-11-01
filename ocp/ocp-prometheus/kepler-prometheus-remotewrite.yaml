@@ -1,0 +1,18 @@
+apiVersion: monitoring.rhobs/v1alpha1
+kind: MonitoringStack
+metadata:
+  name: prometheus-kepler
+  labels:
+    mso: prometheus-kepler
+  namespace: kepler-demo
+spec:
+  alertmanagerConfig:
+    disabled: true
+  logLevel: debug
+  prometheusConfig:
+    replicas: 1
+    enableRemoteWriteReceiver: true
+  resourceSelector:
+    matchLabels:
+      app: prometheus-kepler
+  retention: 1d
