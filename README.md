@@ -141,7 +141,7 @@ oc apply -f ocp/ocp-otlp_collector/kepler-otel_collector.yaml
 
 - Deployed Monitoring Stack to collect prometheus data from the opentelemetry (running in external openshift) using Observability Operator (From openshift Operator Hub).
 ```
-oc apply -f ocp/ocp-prometheus/kepler-prometheus-remotewrite.yaml
+oc apply -f ocp/ocp-prometheus/kepler-prometheus-monitoringstack.yaml
 ```
 
 - Deployed grafana Dashboard to visualize the data collected in the Prometheus Monitoring Stack.
