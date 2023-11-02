@@ -155,3 +155,15 @@ oc apply -f ocp/ocp-grafana/2-grafana-datasource-kepler.yaml
 ```
 oc apply -f ocp/ocp-grafana/3-grafana-dashboard-kepler.yaml
 ```
+
+
+
+***References*** 
+
+https://github.com/sustainable-computing-io/kepler
+
+
+https://github.com/redhat-et/edge-ocp-observability
+
+
+https://github.com/openshift/microshift/blob/main/docs/contributor/network/ovn_kubernetes_traffic_flows.md
