@@ -183,7 +183,22 @@ oc apply --kustomize edge/edge-kepler/manifests/config/base -n kepler
 
 Deployed the opentelemetry collector as a side-car container in kepler daemonset.
 
--  Config file for opentelemetry collector is added as ConfigMap resource and created in kepler namespace.
+-  Config file for opentelemetry collector is added as ConfigMap resource 
+and created in kepler namespace.
+ 
+Update this file with the opentelemetry hostname and port running in openshift
+
+
+```yaml  
+        exporters:
+       logging:
+          loglevel: info
+
+       otlp:
+        endpoint: http://<opentelemetry-running-in-openshift>:<port>
+        tls:
+         insecure: true
+```
 
 ```
 vi edge/edge-otel-collector/1-kepler-microshift-otelconfig.yaml
@@ -193,8 +208,11 @@ oc create -n kepler -f edge/edge-otel-collector/1-kepler-microshift-otelconfig.y
 ```
 
 - Added the opemtelemetry as sidecar container with kepler daemonset.
+
+Update the image with any custom opentelemetry collector if necessary or use the default collector image
+
 ```
-vi edge/edge-otel-collector/2-kepler-patch-sidecar-otel.config.yaml
+vi edge/edge-otel-collector/2-kepler-patch-sidecar-otel.yaml
 ```
 ```
 oc patch daemonset kepler-exporter -n kepler --patch-file edge/edge-otel-collector/2-kepler-patch-sidecar-otel.yaml

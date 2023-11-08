@@ -20,7 +20,7 @@ spec:
         imagePullPolicy: IfNotPresent
         args:
           - "--config=/conf/config/otelconfig.yaml"
-        image: quay.io/sallyom/otelcolcontrib:ubi9
+        image: ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-contrib:0.88.0
         resources:
           limits:
             cpu: 200m
