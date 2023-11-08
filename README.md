@@ -147,6 +147,14 @@ oc label ns kepler --overwrite pod-security.kubernetes.io/enforce=privileged
 
 - Downloaded the Kepler source code from [kepler - git repo](https://github.com/sustainable-computing-io/kepler) and renamed as edge/edge-kepler. 
 
+```
+git clone https://github.com/sustainable-computing-io/kepler.git
+```
+
+```
+mv ./kepler ./edge/edge-kepler
+```
+
 Kepler itself provides the easy way of deploying kepler expoerter as a daemonset in microshift using the [kustomization.yaml](./edge/edge-kepler/manifests/config/exporter/kustomization.yaml)
 
 Since, microshift is a lightweight version of openshift, it requires scc permissions to be added.
