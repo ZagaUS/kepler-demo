@@ -42,12 +42,33 @@ sudo chown root:root /etc/crio/openshift-pull-secret
 sudo chmod 600 /etc/crio/openshift-pull-secret
 ```
 
+- To access the microshift locally, copy the kuebconfig file from the /var/lib/microshift/resources/kubeadmin/kubeconfig and store it in $HOME/.kube folder.
+
+```
+mkdir -p ~/.kube/
+```
+
+```
+sudo cat /var/lib/microshift/resources/kubeadmin/kubeconfig > ~/.kube/config
+```
+
+```
+chmod go-r ~/.kube/config
+```
+
 Follow below steps when firewall-cmd is enabled in RHEL 9.2
 
 - 10.42.0.0/16 is the network range for pods running in microshift and 169.254.169.1 is the IP address of Microshift OVN network
 ```
 sudo firewall-cmd --permanent --zone=trusted --add-source={10.42.0.0/16,169.254.169.1} && sudo firewall-cmd --reload
 ```
+
+For verification, that microshift is running, Use the following command
+
+```
+oc get all -A
+```
+
 
 - To access microshift remotely edit the microshift config file. It'll not be configured, has to be configured maunally.  
 
@@ -83,6 +104,30 @@ sudo systemctl restart microshift
 cat /var/lib/microshift/resources/kubeadmin/edge-microshift.example.com/kubeconfig
 ```
 
+use scp to copy this file or copy the content and do the following steps in the remote machine
+
+```
+mkdir -p ~/.kube/
+```
+
+```
+MICROSHIFT_MACHINE=<name or IP address of Red Hat build of MicroShift machine>
+```
+
+```
+ssh <user>@$MICROSHIFT_MACHINE "sudo cat /var/lib/microshift/resources/kubeadmin/$MICROSHIFT_MACHINE/kubeconfig" > ~/.kube/config
+```
+
+```
+chmod go-r ~/.kube/config
+```
+
+Make sure you have oc client in the remote machine and verify the access to microshift using
+
+```
+oc get all -A
+```
+
 
 ***Configuring Kepler DaemonSet and enabling power consumption metrics in edge microshift***
 
@@ -100,11 +145,28 @@ oc label ns kepler security.openshift.io/scc.podSecurityLabelSync=false
 oc label ns kepler --overwrite pod-security.kubernetes.io/enforce=privileged
 ```
 
-- Downloaded the Kepler source code from [kepler - git repo](https://github.com/sustainable-computing-io/kepler) and renamed as edge/edge-kepler. Changed some of the lines to allow some scc permissions for microshift in kustomization files.
+- Downloaded the Kepler source code from [kepler - git repo](https://github.com/sustainable-computing-io/kepler) and renamed as edge/edge-kepler. 
+
+Kepler itself provides the easy way of deploying kepler expoerter as a daemonset in microshift using the [kustomization.yaml](./edge/edge-kepler/manifests/config/exporter/kustomization.yaml)
+
+Since, microshift is a lightweight version of openshift, it requires scc permissions to be added.
+
+Edit the following lines in [kustomization.yaml](./edge/edge-kepler/manifests/config/exporter/kustomization.yaml)
 
 ```
 vi edge-kepler/manifests/config/exporter/kustomization.yaml
 ```
+
+     1. Uncomment line 3
+       - openshift_scc.yaml
+
+     2. Remove [] in line 8
+        patchesStrategicMerge:
+
+     3. uncomment line 18
+       - ./patch/patch-openshift.yaml
+
+
 
 - Deployed kepler on microshift under the kepler namespace.
 ```
