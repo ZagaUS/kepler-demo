@@ -10,14 +10,14 @@ install any virtualization tools (can be, KVM, Virtualbox, VMware or any tool) t
 **Installing and starting the microshift from RPM package**
 
 
-- Enable the Microshift repository
+- Enable the Microshift RPM repository
 ```
 sudo subscription-manager repos \
 --enable rhocp-4.14-for-rhel-9-$(uname -m)-rpms \
 --enable fast-datapath-for-rhel-9-$(uname -m)-rpms
 ```
 
-- Install Red Haat build of Microshift
+- Install Red Hat build of Microshift
 ``` 
 dnf install -y microshift
 ```
