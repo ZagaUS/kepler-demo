@@ -1,0 +1,13 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+# bases:
+#   - ../kepler-ds-resources
+resources:
+  - 1-kepler-namespace.yaml
+  - 2-kepler-exporter-configmap.yaml
+  - 3-kepler-exporter-service_account.yaml
+  - 4-kepler-exporter-cluster_role.yaml
+  - 5-kepler-exporter-cluster_role_binding.yaml
+  - 6-kepler-exporter-security_context_constraints.yaml
+  - 7-kepler-exporter-service.yaml
+  - 8-kepler-exporter-ds.yaml

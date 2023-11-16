@@ -1,0 +1,36 @@
+kind: OpenTelemetryCollector
+apiVersion: opentelemetry.io/v1alpha1
+metadata:
+  name: kepler-otel
+  namespace: kepler-demo
+spec:
+  image: ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-contrib:0.88.0
+  config: |
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+          http:
+
+    processors:
+      batch:
+      memory_limiter:
+        check_interval: 1s
+        limit_percentage: 80
+        spike_limit_percentage: 25
+
+    exporters:
+      logging:
+        loglevel: debug
+      
+      prometheusremotewrite:
+        endpoint: http://prometheus-kepler-prometheus.kepler-demo.svc.cluster.local:9090/api/v1/write
+        tls:
+          insecure: true
+
+    service:
+      pipelines:
+        metrics:
+          receivers: [otlp]
+          processors: [batch, memory_limiter]
+          exporters: [logging, prometheusremotewrite]

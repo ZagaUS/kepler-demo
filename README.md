@@ -131,54 +131,10 @@ oc get all -A
 
 ***Configuring Kepler DaemonSet and enabling power consumption metrics in edge microshift***
 
-- Create namespace in microshift to deploy kepler daemon-set.
-```
-oc create ns kepler
-```
+Apply all the manifests in the [edge-kepler](./edge/edge-kepler) directory using [kustomization file](./edge/edge-kepler/kustomization.yaml)
 
 ```
-oc label ns kepler security.openshift.io/scc.podSecurityLabelSync=false
-```
-
-
-```
-oc label ns kepler --overwrite pod-security.kubernetes.io/enforce=privileged
-```
-
-- Downloaded the Kepler source code from [kepler - git repo](https://github.com/sustainable-computing-io/kepler) and renamed as edge/edge-kepler. 
-
-```
-git clone https://github.com/sustainable-computing-io/kepler.git
-```
-
-```
-mv ./kepler ./edge/edge-kepler
-```
-
-Kepler itself provides the easy way of deploying kepler expoerter as a daemonset in microshift using the [kustomization.yaml](./edge/edge-kepler/manifests/config/exporter/kustomization.yaml)
-
-Since, microshift is a lightweight version of openshift, it requires scc permissions to be added.
-
-Edit the following lines in [kustomization.yaml](./edge/edge-kepler/manifests/config/exporter/kustomization.yaml)
-
-```
-vi edge-kepler/manifests/config/exporter/kustomization.yaml
-```
-
-     1. Uncomment line 3
-       - openshift_scc.yaml
-
-     2. Remove [] in line 8
-        patchesStrategicMerge:
-
-     3. uncomment line 18
-       - ./patch/patch-openshift.yaml
-
-
-
-- Deployed kepler on microshift under the kepler namespace.
-```
-oc apply --kustomize edge/edge-kepler/manifests/config/base -n kepler
+oc apply -k ./edge/edge-kepler
 ```
 
 Deployed the opentelemetry collector as a side-car container in kepler daemonset.
@@ -190,12 +146,12 @@ Update this file with the opentelemetry hostname and port running in openshift
 
 
 ```yaml  
-        exporters:
+    exporters:
        logging:
           loglevel: info
 
        otlp:
-        endpoint: http://<opentelemetry-running-in-openshift>:<port>
+        endpoint: http://<external-opentelemetry>:<port>
         tls:
          insecure: true
 ```
@@ -244,6 +200,57 @@ oc apply -f ocp/ocp-grafana/2-grafana-datasource-kepler.yaml
 oc apply -f ocp/ocp-grafana/3-grafana-dashboard-kepler.yaml
 ```
 
+**  **
+
+***Optional***
+
+***To deploy kepler exporter Daemonset from the source code (if required)***
+
+- Create namespace in microshift to deploy kepler daemon-set.
+```
+oc create ns kepler
+```
+
+```
+oc label ns kepler security.openshift.io/scc.podSecurityLabelSync=false
+```
+
+```
+oc label ns kepler --overwrite pod-security.kubernetes.io/enforce=privileged
+```
+
+- Downloaded the Kepler source code from [kepler - git repo](https://github.com/sustainable-computing-io/kepler) and renamed as edge/edge-kepler. 
+
+```
+git clone https://github.com/sustainable-computing-io/kepler.git ./edge/kepler
+```
+
+Kepler itself provides the easy way of deploying kepler expoerter as a daemonset in microshift using the [kustomization.yaml](./edge/edge-kepler/manifests/config/exporter/kustomization.yaml)
+
+Since, microshift is a lightweight version of openshift, it requires scc permissions to be added.
+
+Edit the following lines in [kustomization.yaml](./edge/edge-kepler/manifests/config/exporter/kustomization.yaml)
+
+```
+vi edge-kepler/manifests/config/exporter/kustomization.yaml
+```
+
+     1. Uncomment line 3
+       - openshift_scc.yaml
+
+     2. Remove [] in line 8
+        patchesStrategicMerge:
+
+     3. uncomment line 18
+       - ./patch/patch-openshift.yaml
+
+
+
+- Deployed kepler on microshift under the kepler namespace.
+```
+oc apply --kustomize edge/edge-kepler/manifests/config/base -n kepler
+```
+
 
 
 ***References*** 
@@ -255,3 +262,6 @@ https://github.com/redhat-et/edge-ocp-observability
 
 
 https://github.com/openshift/microshift/blob/main/docs/contributor/network/ovn_kubernetes_traffic_flows.md
+
+
+https://access.redhat.com/documentation/en-us/red_hat_build_of_microshift
