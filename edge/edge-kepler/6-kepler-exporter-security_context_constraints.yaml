@@ -4,6 +4,7 @@ metadata:
   name: kepler-exporter-scc
   labels:
     app.kubernetes.io/component: exporter
+    app.kubernetes.io/name: kepler-exporter
     app.kubernetes.io/part-of: kepler
     sustainable-computing.io/app: kepler
 allowHostDirVolumePlugin: true

@@ -5,11 +5,10 @@ metadata:
   namespace: kepler
   labels:
     app.kubernetes.io/component: exporter
-    app.kubernetes.io/managed-by: kepler-operator
+    app.kubernetes.io/name: kepler-exporter
     app.kubernetes.io/part-of: kepler
     sustainable-computing.io/app: kepler
 spec:
-  clusterIP: None
   ipFamilies:
     - IPv4
   ports:
@@ -18,9 +17,7 @@ spec:
       port: 9102
       targetPort: 9102
   internalTrafficPolicy: Cluster
-  clusterIPs:
-    - None
-  type: ClusterIP
+  type: LoadBalancer
   ipFamilyPolicy: SingleStack
   sessionAffinity: None
   selector:
