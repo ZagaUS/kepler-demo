@@ -10,4 +10,4 @@ spec:
     matchLabels:
       dashboards: grafana-kepler
   # url: https://raw.githubusercontent.com/sustainable-computing-io/kepler/main/grafana-dashboards/Kepler-Exporter.json
-  url: https://raw.githubusercontent.com/ZagaUS/kepler-demo/main/ocp/ocp-grafana/grafana-dashboard-kepler.json
+  url: https://raw.githubusercontent.com/ZagaUS/kepler-demo/main/ocp/ocp-grafana/4-grafana-dashboard-kepler.json
