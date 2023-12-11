@@ -1,0 +1,15 @@
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: grafana-kepler-dashboard
+  namespace: kepler-demo
+spec:
+  # host: >-
+  #   grafana-kepler-dashboard-kepler-demo.apps.zagaopenshift.zagaopensource.com
+  to:
+    kind: Service
+    name: grafana-kepler-service
+    weight: 100
+  port:
+    targetPort: grafana
+  wildcardPolicy: None

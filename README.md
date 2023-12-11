@@ -293,6 +293,27 @@ oc new-project kepler-demo
 oc apply -f ocp/ocp-otlp_collector/1-kepler-otel_collector.yaml
 ```
 
+
+
+***Note:*** \
+Opentelemetry collector can be exposed in both secure and insecure method.
+
+**Secure Route**: Ingress configuration in OpenTelemetry Collector CRD creates a secure route for exposing the Otel collector outside of the cluster (Not tested).***
+
+```yaml
+  ingress:
+    route:
+      termination: edge
+    type: route
+```
+
+**Insecure Route**: For exposing OpenTelemetry collector outside the OCP cluster (Insecure), MetalLB LoadBalancer is used for this demo, since openshift cluster is running in Bare Metal. This configuration may vary for Openshift running in cloud environment.
+
+Apply the patch command to change the type in openshift service
+```shell
+oc patch service kepler-otel-service -n kepler-demo --type='json' -p '[{"op": "replace", "path": "/spec/type", "value": "LoadBalancer"}]'
+```
+
 #### Prometheus Stack Setup
 - Deployed Monitoring Stack to collect prometheus data from the opentelemetry (running in external openshift) using Observability Operator (From openshift Operator Hub).
 
@@ -308,6 +329,7 @@ Apply the grafana CRD
 ```shell
 oc apply -f ocp/ocp-grafana/1-grafana-kepler.yaml
 ``` 
+
 
 Apply the grafanaDatasource CRD
 
@@ -334,6 +356,25 @@ Apply the grafanaDashboard CRD
 
 ```shell
 oc apply -f ocp/ocp-grafana/3-grafana-dashboard-kepler.yaml
+```
+
+**Note**: Route for Grafana CRD need to be added manually, either through web console (Administrator -> Networking -> Routes)  or use the [5-grafana-dashboard-route](./ocp/ocp-grafana/5-grafana-dashboard-route.yaml) yaml file.
+
+
+Edit the yaml file, to use custom hostname if necessary or leave this line commented \
+And verify the name of the service
+```yaml
+spec:
+  # host: >-
+  #   grafana-kepler-dashboard-kepler-demo.apps.zagaopenshift.zagaopensource.com
+  to:
+    kind: Service
+    name: grafana-kepler-service
+```
+Apply the grafana route
+
+```shell
+oc apply -f ocp/ocp-grafana/5-grafana-dashboard-route.yaml
 ```
 
 **  **
