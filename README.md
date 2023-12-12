@@ -199,7 +199,7 @@ vi edge/edge-otel-collector/2-kepler-patch-sidecar-otel.yaml
 ```
 
 ```shell
-oc patch daemonset kepler-exporter -n kepler --patch-file edge/edge-otel-collector/2-kepler-patch-sidecar-otel.yaml
+oc patch daemonset kepler-exporter-ds -n kepler --patch-file edge/edge-otel-collector/2-kepler-patch-sidecar-otel.yaml
 ```
 
 The opentelemetry sidecar attached to the kepler daemonset in microshift is configured to send the data to an external opentelemetry collector running in openshift.
