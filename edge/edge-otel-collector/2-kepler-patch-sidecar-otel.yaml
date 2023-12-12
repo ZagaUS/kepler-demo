@@ -4,17 +4,8 @@ spec:
     spec:
       volumes:
       - configMap:
-          name: tls-otelcol
-        name: tls-otelcol
-      - configMap:
           name: otelcol
         name: otelconfig
-      - configMap:
-          name: server-cert
-        name: server-cert
-      - configMap:
-          name: clientca
-        name: clientca
       containers:
       - name: otc-container
         imagePullPolicy: IfNotPresent
@@ -29,12 +20,6 @@ spec:
             cpu: 100m
             memory: 200Mi
         volumeMounts:
-        - mountPath: /conf/tls
-          name: tls-otelcol
-        - mountPath: /conf
-          name: server-cert
-        - mountPath: /etc/pki/ca-trust/source/clientca
-          name: clientca
         - mountPath: /conf/config
           name: otelconfig
 
