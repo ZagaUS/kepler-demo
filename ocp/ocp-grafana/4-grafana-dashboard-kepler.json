@@ -829,6 +829,40 @@
           "skipUrlSync": false,
           "type": "datasource"
         },
+
+      {
+        "allValue": ".*",
+        "current": {
+          "selected": false,
+          "text": "microshift",
+          "value": "microshift"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+        },
+        "definition": "label_values(kepler_node_core_joules_total, instance)",
+        "description": "Microshift Instance",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Instance",
+        "multi": false,
+        "name": "instance",
+        "options": [],
+        "query": {
+          "query": "label_values(kepler_node_core_joules_total, instance)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+          
         {
           "allValue": ".*",
           "current": {
