@@ -841,7 +841,7 @@
           "type": "prometheus",
           "uid": "${datasource}"
         },
-        "definition": "label_values(kepler_node_core_joules_total, instance)",
+        "definition": "label_values(kepler_node_core_joules_total, exported_instance)",
         "description": "Microshift Instance",
         "hide": 0,
         "includeAll": true,
@@ -850,7 +850,7 @@
         "name": "instance",
         "options": [],
         "query": {
-          "query": "label_values(kepler_node_core_joules_total, instance)",
+          "query": "label_values(kepler_node_core_joules_total, exported_instance)",
           "refId": "StandardVariableQuery"
         },
         "refresh": 1,
