@@ -834,8 +834,8 @@
         "allValue": ".*",
         "current": {
           "selected": false,
-          "text": "microshift",
-          "value": "microshift"
+          "text": "All",
+          "value": "$__all"
         },
         "datasource": {
           "type": "prometheus",
