@@ -847,7 +847,7 @@
         "includeAll": true,
         "label": "Instance",
         "multi": false,
-        "name": "instance",
+        "name": "exported_instance",
         "options": [],
         "query": {
           "query": "label_values(kepler_node_core_joules_total, exported_instance)",
