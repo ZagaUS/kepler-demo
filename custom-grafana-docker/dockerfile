@@ -1,0 +1,19 @@
+FROM docker.io/grafana/grafana
+
+USER root
+
+COPY zaga.svg /usr/share/grafana/public/img/grafana_icon.svg
+COPY zaga.svg /usr/share/grafana/public/img/grafana_com_auth_icon.svg
+
+COPY zaga.png /usr/share/grafana/public/img/fav32.png
+COPY zaga.png /usr/share/grafana/public/img/mstile-150x150.png
+
+RUN sed -i 's/Welcome to Grafana/Welcome to Zaga Opensource/g' ./public/build/*.js ./public/build/*.js.map
+RUN sed -i 's/width:"24px",height:"24px"/width:"44px",height:"44px"/g' ./public/build/*.js ./public/build/*.js.map
+
+USER 472
+
+ENTRYPOINT ["/run.sh"]
+
+
+# Container registry: quay.io/zagaos/zaga-grafana-custom

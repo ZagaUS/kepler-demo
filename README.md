@@ -7,7 +7,7 @@
 Download the Red Hat Enterprise Linux 9.2 and
 install any virtualization tools (can be, KVM, Virtualbox, VMware or any tool) to setup a RHEL virtual machine.
 
-### Installing and starting the microshift from RPM package
+### 1. Installing and starting the microshift from RPM package
 
 
 - Enable the Microshift RPM repository
@@ -155,48 +155,98 @@ oc get all -A
 ```
 
 
-### Configuring Kepler DaemonSet and enabling power consumption metrics in edge microshift
+### 2. Configuring Kepler DaemonSet and enabling power consumption metrics in edge microshift
 
-Apply all the manifests in the [edge-kepler](./edge/edge-kepler) directory using [kustomization file](./edge/edge-kepler/kustomization.yaml)
+
+#### 1. Deploy the Kepler exporter deamonset in Kepler Namespace
+- Apply all the manifests in the [edge-kepler](./edge/edge-kepler) directory using [kustomization file](./edge/edge-kepler/kustomization.yaml)
 
 ```shell
 oc apply -k ./edge/edge-kepler
 ```
+- Verify the kepler deamonset and pod is running, using
 
-Deployed the opentelemetry collector as a side-car container in kepler daemonset.
+```shell
+oc get all -n kepler
+```
 
--  Config file for opentelemetry collector is added as ConfigMap resource 
-and created in kepler namespace.
- 
-Update this file with the opentelemetry hostname and port running in openshift
+#### 2. Deploy opentelemetry collector as a side-car container in kepler daemonset.
 
+-  **Config file for [opentelemetry collector](https://opentelemetry.io/docs/) is added as ConfigMap resource in kepler namespace.**
+
+Before creating config map in microshift,
+
+Edit the [opentelemetry configmap file](./edge/edge-otel-collector/1-kepler-microshift-otelconfig.yaml) using the below command,
+```shell
+vi edge/edge-otel-collector/1-kepler-microshift-otelconfig.yaml
+```
+
+and update the [opentelemetry configmap file](./edge/edge-otel-collector/1-kepler-microshift-otelconfig.yaml) with the external opentelemetry hostname and port
+by,
+
+A) Replacing hostname of the microshift instance in receivers.
+
+1. **HOSTNAME** = Name of the machine where microshift is installed.
+
+```shell
+[user@host]$ hostname # apply this command to get the hostname of the machine (Don't use localhost)
+```
+
+B) Replacing the following in exporters:
+1. **EXTERNAL_OTEL_PROTOCOL** = use either http (insecure) and https (secure)
+2. **EXTERNAL_OTEL_HOSTNAME** = Hostname of the external opentelemetry collector (Do not use localhost)
+3. **EXTERNAL_OTEL_PORT**     = port in which opentelemetry collector is running (Default otel port is 4317)
+
+
+
+Above Placeholders in [opentelemetry configmap file](./edge/edge-otel-collector/1-kepler-microshift-otelconfig.yaml) will be like,
 
 ```yaml  
+    receivers:
+      prometheus:
+        config:
+          scrape_configs:
+          - job_name: 'kepler'
+            scrape_interval: 2s
+            static_configs:
+            - targets: ['localhost:9102']
+              labels: 
+                 exported_instance: HOSTNAME
+       ...
     exporters:
-       logging:
-          loglevel: info
-
+       ...
        otlp:
-        endpoint: http://<external-opentelemetry>:<port>
+        endpoint: EXTERNAL_OTEL_PROTOCOL://EXTERNAL_OTEL_HOSTNAME:EXTERNAL_OTEL_PORT
         tls:
          insecure: true
 ```
 
-```shell
-vi edge/edge-otel-collector/1-kepler-microshift-otelconfig.yaml
-```
+ Prometheus metric label **exported_instance: HOSTNAME** in prometheus receiver is added to identify the name of microshift instance. \
+ This label will be added to all the kepler exported prometheus metrics data, to use as an unique key for instance filter when collecting data from multiple microshift instance and visualize in grafana dashboard.
+
+
+
+
+Run the below command to create the otel collector configmap in kepler namespace.
 
 ```shell
 oc create -n kepler -f edge/edge-otel-collector/1-kepler-microshift-otelconfig.yaml
 ```
 
-- Added the opemtelemetry as sidecar container with kepler daemonset.
 
-Update the image with any custom opentelemetry collector if necessary or use the default collector image
+- **Added the opentelemetry collector as sidecar container with kepler daemonset.**
+
+***Note:*** Update the image with any custom opentelemetry collector if necessary or use the default collector image by editing the [kepler opentelemetry sidecar](./edge/edge-otel-collector/2-kepler-patch-sidecar-otel.yaml) yaml file using below command
+
+The opentelemetry collector image used here is \
+**ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-contrib:0.88.0**
+This image is also available in Quay and Docker container registries.
 
 ```shell
 vi edge/edge-otel-collector/2-kepler-patch-sidecar-otel.yaml
 ```
+
+Run the below command to patch the [kepler-exporter-ds](./edge/edge-kepler/8-kepler-exporter-ds.yaml) with [opentelemetry sidecar container](./edge/edge-otel-collector/2-kepler-patch-sidecar-otel.yaml)
 
 ```shell
 oc patch daemonset kepler-exporter -n kepler --patch-file edge/edge-otel-collector/2-kepler-patch-sidecar-otel.yaml
@@ -258,7 +308,7 @@ oc apply --kustomize edge/edge-kepler/manifests/config/base -n kepler
 
 ** **
 
-### Data visualization setup in External openshift cluster (Openshift cluster running in remote)
+### 3. Data visualization setup in External openshift cluster (Openshift cluster running in remote)
 
 
 - Namespace used for this demo in Openshift Container Platform
@@ -278,15 +328,16 @@ oc new-project kepler-demo
      Install from [Operator Hub](https://www.ibm.com/docs/ko/erqa?topic=monitoring-installing-grafana-operator) \
    (or) \
    run the following command
-   ```shell
-   oc apply -f 0-grafana-operator.yaml
-   ```
+
+```shell
+oc apply -f 0-grafana-operator.yaml
+```
 
   3. observability-operator
 
      Install from [Operator Hub](https://docs.openshift.com/container-platform/4.14/monitoring/cluster_observability_operator/installing-the-cluster-observability-operator.html)
    
-#### OpenTelemetry Setup
+#### 1. OpenTelemetry Setup
 - Configured the opentelemetry collector using Red Hat OpenShift distributed tracing data collection operator (From openshift Operator Hub).
 
 ```shell
@@ -314,34 +365,57 @@ Apply the patch command to change the type in openshift service
 oc patch service kepler-otel-service -n kepler-demo --type='json' -p '[{"op": "replace", "path": "/spec/type", "value": "LoadBalancer"}]'
 ```
 
-#### Prometheus Stack Setup
+#### 2. Prometheus Stack Setup
 - Deployed Monitoring Stack to collect prometheus data from the opentelemetry (running in external openshift) using Observability Operator (From openshift Operator Hub).
 
 ```shell
 oc apply -f ocp/ocp-prometheus/1-kepler-prometheus-monitoringstack.yaml
 ```
 
-#### Grafana Setup
+#### 3. Grafana Setup
 - Deployed grafana Dashboard to visualize the data collected in the Prometheus Monitoring Stack.
 
-Apply the grafana CRD
+A) Apply the grafana CRD
+
+To deploy grafana with customized docker image apply the [grafana yaml](./ocp/ocp-grafana/1-grafana-kepler-zaga-logo.yaml) configured with custom docker image \
+ ( [custom docker image with Zaga Logo](https://quay.io/repository/zagaos/zaga-grafana-custom) is used in this demo)
+
+
 
 ```shell
 oc apply -f ocp/ocp-grafana/1-grafana-kepler.yaml
+#  or 
+oc apply -f ocp/ocp-grafana/1-grafana-kepler-zaga-logo.yaml
 ``` 
 
 
-Apply the grafanaDatasource CRD
+B) Apply the [grafanaDatasource](./ocp/ocp-grafana/2-grafana-datasource-kepler.yaml) CRD
+
+[Grafana datasource](./ocp/ocp-grafana/2-grafana-datasource-kepler.yaml) CRD is configured with the prometheus service URL (Deployment steps in Prometheus Stack Setup)
+
+```yaml
+spec:
+  datasource:
+    ...
+    name: prometheus
+    type: prometheus
+    url: 'http://prometheus-kepler-prometheus.kepler-demo.svc.cluster.local:9090'
+```
+
+Run the command to apply [grafanaDatasource](./ocp/ocp-grafana/2-grafana-datasource-kepler.yaml) CRD
 
 ```shell
 oc apply -f ocp/ocp-grafana/2-grafana-datasource-kepler.yaml
 ```
 
-Note: 
-- Grafana Dashboard model is provided as a JSON file in the [ocp/ocp-grafana/4-grafana-dashboard-kepler.json](./ocp/ocp-grafana/4-grafana-dashboard-kepler.json). (
+
+C) Apply the [grafanaDashboard](./ocp/ocp-grafana/3-grafana-dashboard-kepler.yaml) CRD
+
+
+Grafana Dashboard model is provided as a JSON file in the [grafana-dashboard-kepler json](./ocp/ocp-grafana/4-grafana-dashboard-kepler.json). (
 This dashboard json is also available in official [kepler repo](https://raw.githubusercontent.com/sustainable-computing-io/kepler/main/grafana-dashboards/Kepler-Exporter.json)  )
 
-- Configured in the [grafana-dashboard](./ocp/ocp-grafana/3-grafana-dashboard-kepler) CRD as
+This dashboard json file is configured in the [grafana-dashboard yaml](./ocp/ocp-grafana/3-grafana-dashboard-kepler) CRD as
 
 
 ```yaml
@@ -352,13 +426,18 @@ spec:
   url: https://raw.githubusercontent.com/ZagaUS/kepler-demo/main/ocp/ocp-grafana/4-grafana-dashboard-kepler.json
 ```
 
-Apply the grafanaDashboard CRD
+Instance filter is added in the [grafana dashboard](./ocp/ocp-grafana/4-grafana-dashboard-kepler.json) for filtering the exported power metrics from multiple microshift instances.
+
+Run the command to apply [grafana dashboard](./ocp/ocp-grafana/3-grafana-dashboard-kepler.yaml) CRD
 
 ```shell
 oc apply -f ocp/ocp-grafana/3-grafana-dashboard-kepler.yaml
 ```
 
-**Note**: Route for Grafana CRD need to be added manually, either through web console (Administrator -> Networking -> Routes)  or use the [5-grafana-dashboard-route](./ocp/ocp-grafana/5-grafana-dashboard-route.yaml) yaml file.
+
+D) Apply the grafana route
+
+Route for Grafana CRD need to be added manually, either through web console (Administrator -> Networking -> Routes)  or use the [5-grafana-dashboard-route](./ocp/ocp-grafana/5-grafana-dashboard-route.yaml) yaml file.
 
 
 Edit the yaml file, to use custom hostname if necessary or leave this line commented \
@@ -371,15 +450,27 @@ spec:
     kind: Service
     name: grafana-kepler-service
 ```
-Apply the grafana route
 
+Apply the [grafana route yaml](ocp/ocp-grafana/5-grafana-dashboard-route.yaml)
 ```shell
 oc apply -f ocp/ocp-grafana/5-grafana-dashboard-route.yaml
 ```
 
 **  **
 
-### References
+### 4. New Changes
+
+1. Added a label **exported_instance** in the [opentelemetry collector](./edge/edge-otel-collector/1-kepler-microshift-otelconfig.yaml) configuration on microshift to identify the name of microshift instance in kepler exported prometheus metrics 
+
+2. Added the filter **instance** in [grafana dashboard](./ocp/ocp-grafana/4-grafana-dashboard-kepler.json) json file to query the data from prometheus metrics based on the label exported_instance.
+
+3. Created a [custom docker image](quay.io/zagaos/zaga-grafana-custom) to add the Zaga logo
+
+4. Created new [grafana CRD](./ocp/ocp-grafana/1-grafana-kepler-zaga-logo.yaml) to use the Zaga logo.
+
+**  **
+
+### 5. [References](./references/)
 
 https://github.com/sustainable-computing-io/kepler
 

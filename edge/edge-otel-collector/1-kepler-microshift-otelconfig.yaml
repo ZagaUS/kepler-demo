@@ -15,19 +15,29 @@ data:
           - job_name: 'kepler'
             scrape_interval: 2s
             static_configs:
-            - targets: ['localhost:9102'] # application metrics endpoint
+            # otel collector running as sidecar with kepler exporter, 
+            # so kepler endpoint is localhost with default port 9102
+            - targets: ['localhost:9102'] # kepler exporter endpoint
+            # Hostname label(exported_instance) is required to filter namespaces and pod based on name of the instance.
+              labels: 
+                 exported_instance: HOSTNAME # Replace with actual hostname of the machine
+              
     processors:
-      memory_limiter:
-        check_interval: 2s
-        limit_percentage: 95
-        spike_limit_percentage: 25
+
+      # memory_limiter:
+      #   check_interval: 2s
+      #   limit_percentage: 95
+      #   spike_limit_percentage: 25
+
       batch:
+
     exporters:
-       logging:
-          loglevel: info
+       debug:
+         verbosity: detailed
 
        otlp:
-        endpoint: http://otel-kepler-backend.apps.zagaopenshift.zagaopensource.com:9111
+        # Host name of the external opentelemetry collector
+        endpoint: EXTERNAL_OTEL_PROTOCOL://EXTERNAL_OTEL_HOSTNAME:EXTERNAL_OTEL_PORT
         tls:
          insecure: true
 
@@ -35,9 +45,8 @@ data:
       telemetry:
         logs:
           level: info
-      #extensions: [bearertokenauth, basicauth/client]
       pipelines:
         metrics:
           receivers: [prometheus]
-          processors: [batch, memory_limiter]
-          exporters: [logging, otlp]
+          processors: [batch]
+          exporters: [debug, otlp]

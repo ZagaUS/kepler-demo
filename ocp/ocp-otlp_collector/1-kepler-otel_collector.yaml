@@ -14,14 +14,14 @@ spec:
 
     processors:
       batch:
-      memory_limiter:
-        check_interval: 1s
-        limit_percentage: 80
-        spike_limit_percentage: 25
+      # memory_limiter:
+      #   check_interval: 1s
+      #   limit_percentage: 80
+      #   spike_limit_percentage: 25
 
     exporters:
-      logging:
-        loglevel: debug
+       debug:
+         verbosity: detailed
       
       prometheusremotewrite:
         endpoint: http://prometheus-kepler-prometheus.kepler-demo.svc.cluster.local:9090/api/v1/write
@@ -32,5 +32,5 @@ spec:
       pipelines:
         metrics:
           receivers: [otlp]
-          processors: [batch, memory_limiter]
-          exporters: [logging, prometheusremotewrite]
+          processors: [batch]
+          exporters: [debug, prometheusremotewrite]

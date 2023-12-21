@@ -1,6 +1,6 @@
 #!/bin/bash
 
-KUBECONFIG=./auto-scripts/microshift-kubeconfig-edge-local
+KUBECONFIG=./auto-scripts/kubeconfig/microshift-kubeconfig-edge-local
 
 echo "1 kepler Namespace"
 echo "------------------"

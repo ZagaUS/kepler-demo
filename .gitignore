@@ -1,4 +1,1 @@
-rough.txt
-dummy_manifests.txt
-autoscripts/*
-auto-scripts/microshift-kubeconfig-edge-local
+auto-scripts/kubeconfig/*

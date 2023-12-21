@@ -100,7 +100,7 @@
               "uid": "${datasource}"
             },
             "editorMode": "code",
-            "expr": "( sum(\n      increase(\n         (kepler_container_joules_total{container_namespace=~\"$namespace\", pod_name=~\"$pod\"}[24h:1m])\n      )\n   ) * $watt_per_second_to_kWh \n) * $coal",
+            "expr": "( sum(\n      increase(\n         (kepler_container_joules_total{exported_instance=~\"$exported_instance\", container_namespace=~\"$namespace\", pod_name=~\"$pod\"}[24h:1m])\n      )\n   ) * $watt_per_second_to_kWh \n) * $coal",
             "hide": false,
             "legendFormat": "CO2 Coal",
             "range": true,
@@ -112,7 +112,7 @@
               "uid": "${datasource}"
             },
             "editorMode": "code",
-            "expr": "( sum(\n      increase(\n         (kepler_container_joules_total{container_namespace=~\"$namespace\", pod_name=~\"$pod\"}[24h:1m])\n      )\n   ) * $watt_per_second_to_kWh \n) * $petroleum",
+            "expr": "( sum(\n      increase(\n         (kepler_container_joules_total{exported_instance=~\"$exported_instance\", container_namespace=~\"$namespace\", pod_name=~\"$pod\"}[24h:1m])\n      )\n   ) * $watt_per_second_to_kWh \n) * $petroleum",
             "hide": false,
             "legendFormat": "CO2 Petroleum",
             "range": true,
@@ -124,7 +124,7 @@
               "uid": "${datasource}"
             },
             "editorMode": "code",
-            "expr": "( sum(\n      increase(\n         (kepler_container_joules_total{container_namespace=~\"$namespace\", pod_name=~\"$pod\"}[24h:1m])\n      )\n   ) * $watt_per_second_to_kWh \n) * $natural_gas",
+            "expr": "( sum(\n      increase(\n         (kepler_container_joules_total{exported_instance=~\"$exported_instance\", container_namespace=~\"$namespace\", pod_name=~\"$pod\"}[24h:1m])\n      )\n   ) * $watt_per_second_to_kWh \n) * $natural_gas",
             "hide": false,
             "legendFormat": "CO2 Natural Gas",
             "range": true,
@@ -296,7 +296,7 @@
           {
             "datasource": "prometheus",
             "editorMode": "code",
-            "expr": "sum by (pod_name, container_namespace) (irate(kepler_container_package_joules_total{container_namespace=~\"$namespace\", pod_name=~\"$pod\"}[1m]))",
+            "expr": "sum by (pod_name, container_namespace) (irate(kepler_container_package_joules_total{exported_instance=~\"$exported_instance\", container_namespace=~\"$namespace\", pod_name=~\"$pod\"}[1m]))",
             "hide": false,
             "interval": "",
             "legendFormat": "{{pod_name}} / {{container_namespace}} / PKG",
@@ -306,7 +306,7 @@
           {
             "datasource": "prometheus",
             "editorMode": "code",
-            "expr": "sum by (pod_name, container_namespace) (irate(kepler_container_dram_joules_total{container_namespace=~\"$namespace\", pod_name=~\"$pod\"}[1m]))",
+            "expr": "sum by (pod_name, container_namespace) (irate(kepler_container_dram_joules_total{exported_instance=~\"$exported_instance\", container_namespace=~\"$namespace\", pod_name=~\"$pod\"}[1m]))",
             "hide": false,
             "interval": "",
             "legendFormat": "{{pod_name}} / {{container_namespace}} / DRAM",
@@ -319,7 +319,7 @@
               "uid": "${datasource}"
             },
             "editorMode": "code",
-            "expr": "sum by (pod_name, container_namespace) (irate(kepler_container_other_joules_total{container_namespace=~\"$namespace\", pod_name=~\"$pod\"}[1m]))",
+            "expr": "sum by (pod_name, container_namespace) (irate(kepler_container_other_joules_total{exported_instance=~\"$exported_instance\", container_namespace=~\"$namespace\", pod_name=~\"$pod\"}[1m]))",
             "hide": false,
             "interval": "",
             "legendFormat": "{{pod_name}} / {{container_namespace}} / OTHER",
@@ -332,7 +332,7 @@
               "uid": "${datasource}"
             },
             "editorMode": "code",
-            "expr": "sum by (pod_name, container_namespace) (irate(kepler_container_gpu_joules_total{container_namespace=~\"$namespace\", pod_name=~\"$pod\"}[1m]))",
+            "expr": "sum by (pod_name, container_namespace) (irate(kepler_container_gpu_joules_total{exported_instance=~\"$exported_instance\", container_namespace=~\"$namespace\", pod_name=~\"$pod\"}[1m]))",
             "hide": false,
             "legendFormat": "{{pod_name}} / {{container_namespace}} / GPU",
             "range": true,
@@ -491,7 +491,7 @@
               "uid": "${datasource}"
             },
             "editorMode": "code",
-            "expr": "sum(irate(kepler_container_package_joules_total{container_namespace=~\"$namespace\", pod_name=~\"$pod\"}[1m]))",
+            "expr": "sum(irate(kepler_container_package_joules_total{exported_instance=~\"$exported_instance\", container_namespace=~\"$namespace\", pod_name=~\"$pod\"}[1m]))",
             "hide": false,
             "interval": "",
             "legendFormat": "PKG",
@@ -504,7 +504,7 @@
               "uid": "${datasource}"
             },
             "editorMode": "code",
-            "expr": "sum(irate(kepler_container_dram_joules_total{container_namespace=~\"$namespace\", pod_name=~\"$pod\"}[1m]))",
+            "expr": "sum(irate(kepler_container_dram_joules_total{exported_instance=~\"$exported_instance\", container_namespace=~\"$namespace\", pod_name=~\"$pod\"}[1m]))",
             "hide": false,
             "interval": "",
             "legendFormat": "DRAM",
@@ -517,7 +517,7 @@
               "uid": "${datasource}"
             },
             "editorMode": "code",
-            "expr": "sum(irate(kepler_container_other_joules_total{container_namespace=~\"$namespace\", pod_name=~\"$pod\"}[1m]))",
+            "expr": "sum(irate(kepler_container_other_joules_total{exported_instance=~\"$exported_instance\", container_namespace=~\"$namespace\", pod_name=~\"$pod\"}[1m]))",
             "hide": false,
             "legendFormat": "OTHER",
             "range": true,
@@ -529,7 +529,7 @@
               "uid": "${datasource}"
             },
             "editorMode": "code",
-            "expr": "sum(irate(kepler_container_gpu_joules_total{container_namespace=~\"$namespace\", pod_name=~\"$pod\"}[1m]))",
+            "expr": "sum(irate(kepler_container_gpu_joules_total{exported_instance=~\"$exported_instance\", container_namespace=~\"$namespace\", pod_name=~\"$pod\"}[1m]))",
             "hide": false,
             "legendFormat": " GPU",
             "range": true,
@@ -690,7 +690,7 @@
               "uid": "${datasource}"
             },
             "editorMode": "code",
-            "expr": "sum (\n  increase(\n   (kepler_container_package_joules_total{container_namespace=~\"$namespace\", pod_name=~\"$pod\"}[24h:1m])\n  )\n) * $watt_per_second_to_kWh",
+            "expr": "sum (\n  increase(\n   (kepler_container_package_joules_total{exported_instance=~\"$exported_instance\", container_namespace=~\"$namespace\", pod_name=~\"$pod\"}[24h:1m])\n  )\n) * $watt_per_second_to_kWh",
             "hide": false,
             "interval": "",
             "legendFormat": "PKG (CORE+UNCORE)",
@@ -703,7 +703,7 @@
               "uid": "${datasource}"
             },
             "editorMode": "code",
-            "expr": "sum (\n  increase(\n   (kepler_container_dram_joules_total{container_namespace=~\"$namespace\", pod_name=~\"$pod\"}[24h:1m])\n  )\n) * $watt_per_second_to_kWh",
+            "expr": "sum (\n  increase(\n   (kepler_container_dram_joules_total{exported_instance=~\"$exported_instance\", container_namespace=~\"$namespace\", pod_name=~\"$pod\"}[24h:1m])\n  )\n) * $watt_per_second_to_kWh",
             "hide": false,
             "interval": "",
             "legendFormat": "DRAM",
@@ -716,7 +716,7 @@
               "uid": "${datasource}"
             },
             "editorMode": "code",
-            "expr": "sum (\n  increase(\n   (kepler_container_other_joules_total{container_namespace=~\"$namespace\", pod_name=~\"$pod\"}[24h:1m])\n  )\n) * $watt_per_second_to_kWh",
+            "expr": "sum (\n  increase(\n   (kepler_container_other_joules_total{exported_instance=~\"$exported_instance\", container_namespace=~\"$namespace\", pod_name=~\"$pod\"}[24h:1m])\n  )\n) * $watt_per_second_to_kWh",
             "hide": false,
             "legendFormat": "OTHER",
             "range": true,
@@ -728,7 +728,7 @@
               "uid": "${datasource}"
             },
             "editorMode": "code",
-            "expr": "sum (\n  increase(\n   (kepler_container_gpu_joules_total{container_namespace=~\"$namespace\", pod_name=~\"$pod\"}[24h:1m])\n  )\n) * $watt_per_second_to_kWh",
+            "expr": "sum (\n  increase(\n   (kepler_container_gpu_joules_total{exported_instance=~\"$exported_instance\", container_namespace=~\"$namespace\", pod_name=~\"$pod\"}[24h:1m])\n  )\n) * $watt_per_second_to_kWh",
             "hide": false,
             "legendFormat": " GPU",
             "range": true,
@@ -794,7 +794,7 @@
               "uid": "${datasource}"
             },
             "editorMode": "code",
-            "expr": "sum by (container_namespace) (\n  increase(\n      (kepler_container_joules_total{container_namespace=~\"$namespace\", pod_name=~\"$pod\"}[24h:1m])\n  )\n) * $watt_per_second_to_kWh ",
+            "expr": "sum by (container_namespace) (\n  increase(\n      (kepler_container_joules_total{exported_instance=~\"$exported_instance\" , container_namespace=~\"$namespace\", pod_name=~\"$pod\"}[24h:1m])\n  )\n) * $watt_per_second_to_kWh ",
             "interval": "",
             "legendFormat": "{{container_namespace}}",
             "range": true,
@@ -830,12 +830,13 @@
           "type": "datasource"
         },
 
+
       {
         "allValue": ".*",
         "current": {
           "selected": false,
-            "text": "All",
-            "value": "$__all"
+            "text": "none",
+            "value": ""
         },
         "datasource": {
           "type": "prometheus",
@@ -874,7 +875,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "definition": "label_values(kepler_container_package_joules_total, container_namespace)",
+          "definition": "label_values(kepler_container_package_joules_total{exported_instance=~\"$exported_instance\"}, container_namespace)",
           "description": "Namespace for pods to choose",
           "hide": 0,
           "includeAll": true,
@@ -883,7 +884,7 @@
           "name": "namespace",
           "options": [],
           "query": {
-            "query": "label_values(kepler_container_package_joules_total, container_namespace)",
+            "query": "label_values(kepler_container_package_joules_total{exported_instance=~\"$exported_instance\"}, container_namespace)",
             "refId": "StandardVariableQuery"
           },
           "refresh": 1,
@@ -906,7 +907,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "definition": "label_values(kepler_container_package_joules_total{container_namespace=~\"$namespace\"}, pod_name)",
+          "definition": "label_values(kepler_container_package_joules_total{container_namespace=~\"$namespace\", exported_instance=~\"$exported_instance\"}, pod_name)",
           "hide": 0,
           "includeAll": true,
           "label": "Pod",
@@ -914,7 +915,7 @@
           "name": "pod",
           "options": [],
           "query": {
-            "query": "label_values(kepler_container_package_joules_total{container_namespace=~\"$namespace\"}, pod_name)",
+            "query": "label_values(kepler_container_package_joules_total{container_namespace=~\"$namespace\", exported_instance=~\"$exported_instance\"}, pod_name)",
             "refId": "StandardVariableQuery"
           },
           "refresh": 1,
