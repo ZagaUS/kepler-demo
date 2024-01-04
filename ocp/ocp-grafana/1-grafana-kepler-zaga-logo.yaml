@@ -11,6 +11,8 @@ spec:
     spec:
       template:
          spec:
+           imagePullSecrets:
+             - name: quay-secret-credentials
            containers: 
              - name: grafana
                image: >-
@@ -21,9 +23,9 @@ spec:
     enabled: true
   config:
     auth:
-      disable_signout_menu: 'true'
+      disable_signout_menu: 'false' # If not needed change to true
     auth.anonymous:
-      enabled: 'true'
+      enabled: 'false' # If not needed change to true
     log:
       level: warn
       mode: console

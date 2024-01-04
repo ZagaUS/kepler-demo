@@ -388,6 +388,29 @@ oc apply -f ocp/ocp-grafana/1-grafana-kepler.yaml
 oc apply -f ocp/ocp-grafana/1-grafana-kepler-zaga-logo.yaml
 ``` 
 
+  Note: For [1-grafana-kepler-zaga-logo.yaml](./ocp/ocp-grafana/1-grafana-kepler-zaga-logo.yaml)
+1. [1-grafana-kepler-zaga-logo.yaml](./ocp/ocp-grafana/1-grafana-kepler-zaga-logo.yaml) is configured with login option enabled. If required login with, username as rhel and password as rhel.
+```yaml
+  config:
+    auth:
+      disable_signout_menu: 'false' # If signout not needed change to true
+    auth.anonymous:
+      enabled: 'false' # If auto login not needed change to true
+...
+    security:
+      admin_password: rhel
+      admin_user: rhel
+```
+
+2. Obtain the pull secret from the Quay registry and replace the image pull secret name in  [1-grafana-kepler-zaga-logo.yaml](./ocp/ocp-grafana/1-grafana-kepler-zaga-logo.yaml). In below line
+
+
+    ```yaml
+    imagePullSecrets:
+    - name: quay-secret-credentials
+    ```
+
+
 
 B) Apply the [grafanaDatasource](./ocp/ocp-grafana/2-grafana-datasource-kepler.yaml) CRD
 
@@ -470,7 +493,29 @@ oc apply -f ocp/ocp-grafana/5-grafana-dashboard-route.yaml
 
 **  **
 
-### 5. [References](./references/)
+### 7. Debugging
+
+1. To view the actual prometheus metrics, use the [kepler-exporter-service](./edge/edge-kepler/7-kepler-exporter-service.yaml), which uses the LoadBalancer type to expose the prometheus metrics in /metrics endpoint on port 9102 (default kepler port).   
+
+   Verify the External IP using
+    ```shell
+    oc get svc -n kepler
+    ```
+   and use the below URL to view the prometheus metrics data.  
+   **http://{EXTERNAL_IP}:9102/metrics** 
+
+   ![Get the external IP](./references/kepler-exporter-svc.png)
+
+2. opentelemetry collector exporter is configured with debug exporter. So, the exported metrics data can be seen in kepler-exporter-pod (otel-collector container) logs.
+
+    ```shell
+    oc logs -f <name of the kepler exporter pod> -n kepler  # In microshift 
+
+    oc logs -f <otel collector pod> -n kepler-demo # In openshift
+    ```
+
+**  **
+### 6. [References](./references/)
 
 https://github.com/sustainable-computing-io/kepler
 

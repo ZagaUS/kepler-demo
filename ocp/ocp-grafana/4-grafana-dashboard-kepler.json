@@ -845,7 +845,7 @@
         "definition": "label_values(kepler_node_core_joules_total, exported_instance)",
         "description": "Microshift Instance",
         "hide": 0,
-        "includeAll": true,
+        "includeAll": false,
         "label": "Instance",
         "multi": false,
         "name": "exported_instance",
